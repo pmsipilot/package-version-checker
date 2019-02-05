@@ -1,0 +1,14 @@
+{
+  "name": "package-version-checker",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pmsipilot/package-version-checker"
+  },
+  "scripts": {
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
+  },
+  "devDependencies": {
+    "conventional-changelog-cli": "^2.0.11"
+  }
+}
