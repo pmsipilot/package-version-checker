@@ -1,28 +1,35 @@
 #!/bin/bash
 
-ERROR='\033[0;31m'
-INFO='\033[0;34m'
-RESET='\033[0m'
+function check-yarn {
+    ERROR='\033[0;31m'
+    INFO='\033[0;34m'
+    RESET='\033[0m'
 
-ORIGINAL_DIR="$(pwd)"
-if [ -z $1 ]; then
-    echo -e "${INFO}Default to current path${RESET}"
-    DIR_FRONTEND=$ORIGINAL_DIR
-else
-    DIR_FRONTEND="$1"
-fi
-
-cd $DIR_FRONTEND
-RESULT=0
-for DEP in $(cat package.json | jq ".dependencies" | jq keys | jq -r '.[]')
-do
-    COUNT=$(cat yarn.lock | grep -c $DEP@)
-    if [ $COUNT -gt 1 ]; then
-        echo -e "${ERROR}The dependency ${DEP} is installed in ${COUNT} different versions"
-        RESULT=1
+    if [ -z $1 ]; then
+        echo -e "${INFO}Default to current path${RESET}"
+        DIR_FRONTEND=$(pwd)
+    else
+        DIR_FRONTEND="$1"
     fi
-done
 
-cd $ORIGINAL_DIR
+    pushd $DIR_FRONTEND
+    RESULT=0
+    for DEP in $(jq -r '.dependencies | keys | .[]' package.json)
+    do
+        COUNT=$(cat yarn.lock | grep -c $DEP@)
+        if [ $COUNT -gt 1 ]; then
+            echo -e "${ERROR}The dependency ${DEP} is installed in ${COUNT} different versions${RESET}"
+            RESULT=1
+        fi
+    done
 
-return $RESULT
+    popd
+
+    return $RESULT
+}
+
+
+
+if [[ "$_" = "$0" ]]; then
+    check-yarn $1
+fi
